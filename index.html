@@ -1,0 +1,1521 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111b1c">
+<title>CLEARSPACE — デジタルの、深呼吸。</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#10191b;
+  --ink:#e5eee7;
+  --muted:#8eaaa3;
+  --green:#c6f79b;
+  --line:#ffffff14;
+  --pink:#edb4cc;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font:14px 'Space Grotesk','Noto Sans JP',sans-serif;
+  overflow:hidden;
+}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{
+  outline:2px solid var(--green);
+  outline-offset:5px;
+}
+header{
+  height:88px;
+  padding:0 38px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid var(--line);
+}
+.brand{
+  letter-spacing:.23em;
+  font-size:19px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+.brand i{
+  display:inline-block;
+  width:22px;
+  height:22px;
+  border:1px solid var(--green);
+  border-radius:6px;
+  transform:rotate(-12deg);
+  box-shadow:5px 4px 0 #c6f79b25;
+}
+.tag{
+  font-size:10px;
+  letter-spacing:.15em;
+  color:var(--muted);
+  margin:6px 0 0 35px;
+}
+.headerRight{
+  display:flex;
+  gap:22px;
+  align-items:center;
+  color:var(--muted);
+  font-size:11px;
+  letter-spacing:.08em;
+}
+.quiet{
+  background:transparent;
+  border:1px solid #ffffff22;
+  border-radius:50%;
+  width:38px;
+  height:38px;
+  font-size:15px;
+}
+.layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 282px;
+  height:calc(100dvh - 88px);
+}
+main{
+  position:relative;
+  min-width:0;
+  overflow:hidden;
+  background:radial-gradient(
+    ellipse at 45% 40%,
+    #213633 0%,
+    #142222 55%,
+    #111c1d 100%
+  );
+}
+canvas{
+  display:block;
+  width:100%;
+  height:100%;
+  touch-action:none;
+  cursor:crosshair;
+}
+.scene-label{
+  position:absolute;
+  top:30px;
+  left:32px;
+  pointer-events:none;
+}
+.eyebrow{
+  color:var(--green);
+  font-size:10px;
+  letter-spacing:.2em;
+}
+.scene-label h1{
+  font-size:26px;
+  font-weight:500;
+  letter-spacing:-.04em;
+  margin:8px 0;
+}
+.scene-label p{
+  font-size:11px;
+  color:var(--muted);
+  margin:0;
+}
+.stage-number{
+  position:absolute;
+  right:30px;
+  top:30px;
+  font-size:11px;
+  letter-spacing:.1em;
+  color:var(--muted);
+}
+.bottom{
+  position:absolute;
+  left:30px;
+  right:30px;
+  bottom:23px;
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:10px;
+  pointer-events:none;
+}
+.tools{
+  display:flex;
+  padding:5px;
+  background:#0a1516df;
+  border:1px solid #ffffff18;
+  border-radius:14px;
+  gap:4px;
+  pointer-events:auto;
+  backdrop-filter:blur(12px);
+}
+.tool{
+  border:0;
+  background:transparent;
+  border-radius:9px;
+  padding:11px 16px;
+  color:var(--muted);
+  font-size:12px;
+  transition:.2s;
+}
+.tool.active{background:var(--green);color:#14221c}
+.tool[data-mode="archive"].active{background:var(--pink)}
+kbd{
+  font-family:inherit;
+  font-size:10px;
+  border:1px solid currentColor;
+  opacity:.55;
+  padding:1px 4px;
+  border-radius:3px;
+  margin-left:12px;
+}
+.hint{
+  color:var(--muted);
+  font-size:10px;
+  text-align:right;
+  line-height:1.8;
+}
+.side{
+  padding:30px 25px;
+  background:#111c1e;
+  border-left:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  gap:27px;
+}
+.tiny{
+  font-size:10px;
+  color:var(--muted);
+  letter-spacing:.15em;
+}
+.score{
+  font-size:44px;
+  letter-spacing:-.06em;
+  font-weight:500;
+  margin-top:5px;
+  font-variant-numeric:tabular-nums;
+}
+.score span{
+  font-size:11px;
+  color:var(--muted);
+  margin-left:8px;
+  letter-spacing:0;
+}
+.progressHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:12px;
+}
+.progressHead strong{
+  font-size:22px;
+  font-weight:400;
+  color:var(--green);
+}
+.track{
+  height:4px;
+  background:#ffffff0c;
+  margin-top:12px;
+  border-radius:10px;
+  overflow:hidden;
+}
+.track div{
+  height:100%;
+  background:var(--green);
+  width:0;
+  transition:width .3s;
+}
+.objectives{
+  border-top:1px solid var(--line);
+  padding-top:23px;
+}
+.objective{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:18px 0;
+  font-size:11px;
+  color:#b9cec5;
+}
+.objective b{
+  font-weight:400;
+  font-variant-numeric:tabular-nums;
+}
+.dot{
+  display:inline-block;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--green);
+  margin-right:8px;
+}
+.dot.pink{background:var(--pink)}
+.info{
+  padding:16px;
+  border:1px solid #ffffff12;
+  border-radius:12px;
+  background:#ffffff02;
+}
+.info h3{
+  font-size:12px;
+  font-weight:500;
+  margin:0 0 9px;
+}
+.info p{
+  font-size:11px;
+  line-height:1.9;
+  color:var(--muted);
+  margin:0;
+}
+.readout{
+  min-height:40px;
+  font-size:11px;
+  line-height:1.8;
+  color:var(--green);
+}
+.sideFoot{
+  margin-top:auto;
+  color:#6d8780;
+  font-size:9px;
+  line-height:1.8;
+  letter-spacing:.05em;
+}
+.combo{
+  position:absolute;
+  left:50%;
+  top:28px;
+  transform:translateX(-50%);
+  text-align:center;
+  opacity:0;
+  transition:opacity .25s;
+  pointer-events:none;
+}
+.combo.show{opacity:1}
+.combo strong{
+  font-size:26px;
+  color:var(--green);
+  font-weight:500;
+}
+.combo small{
+  display:block;
+  font-size:9px;
+  color:#b6cbb8;
+  letter-spacing:.18em;
+}
+.overlay{
+  position:absolute;
+  inset:0;
+  background:#0c181b88;
+  backdrop-filter:blur(15px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  z-index:5;
+}
+.overlay.hidden{display:none}
+.modal{
+  max-width:510px;
+  width:100%;
+  text-align:center;
+  padding:38px 26px;
+}
+.modal .mark{
+  color:var(--green);
+  font-size:48px;
+  margin-bottom:19px;
+}
+.modal h2{
+  font-size:42px;
+  letter-spacing:-.06em;
+  font-weight:500;
+  line-height:1.2;
+  margin:14px 0 18px;
+}
+.modal p{
+  font-size:12px;
+  line-height:2;
+  color:#abc2b9;
+  margin:0 auto 22px;
+  max-width:390px;
+}
+.primary{
+  border:none;
+  border-radius:9px;
+  padding:15px 30px;
+  background:var(--green);
+  color:#1c2d20;
+  font-weight:600;
+  box-shadow:0 5px 35px #c6f79b18;
+}
+.modal .fine{
+  display:block;
+  font-size:10px;
+  color:#77968b;
+  margin-top:20px;
+  line-height:1.9;
+}
+.introSteps{
+  display:flex;
+  justify-content:center;
+  gap:24px;
+  margin:24px 0 28px;
+  font-size:11px;
+  color:#b9c9c0;
+}
+.introSteps b{
+  display:block;
+  color:var(--green);
+  font-size:18px;
+  font-weight:400;
+  margin-bottom:7px;
+}
+.endstats{
+  display:flex;
+  justify-content:center;
+  gap:40px;
+  margin:25px 0;
+}
+.endstats b{
+  display:block;
+  font-size:28px;
+  font-weight:400;
+  color:var(--green);
+}
+.endstats span{font-size:10px;color:var(--muted)}
+.pauseBadge{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  padding:20px 30px;
+  background:#0b1618ed;
+  border:1px solid #ffffff22;
+  border-radius:12px;
+  text-align:center;
+  z-index:4;
+}
+.hidden{display:none!important}
+
+@media(max-width:900px){
+  header{height:70px;padding:0 20px}
+  .layout{
+    height:calc(100dvh - 70px);
+    grid-template-columns:minmax(0,1fr) 220px;
+  }
+  .side{padding:25px 17px;gap:20px}
+  .headerRight>span{display:none}
+  .scene-label{left:20px;top:22px}
+  .scene-label h1{font-size:21px}
+  .info{padding:12px}
+  .bottom{left:15px;right:15px}
+  .hint{display:none}
+  .tool{padding:11px 12px}
+  kbd{display:none}
+}
+@media(max-width:620px){
+  .layout{
+    grid-template-columns:1fr;
+    grid-template-rows:minmax(0,1fr) 85px;
+  }
+  .side{
+    border-left:0;
+    border-top:1px solid var(--line);
+    padding:12px 20px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+  }
+  .side .objectives,.side .info,.sideFoot,.readout{display:none}
+  .side .score{font-size:24px;margin-top:2px}
+  .side .tiny{font-size:8px}
+  .side>section:nth-child(2){align-self:center}
+  .progressHead strong{font-size:19px}
+  .track{margin-top:8px}
+  .scene-label h1{font-size:19px}
+  .scene-label p{font-size:9px}
+  .stage-number{right:18px;font-size:9px}
+  .combo{top:95px}
+  .bottom{bottom:15px}
+  .modal h2{font-size:34px}
+  .modal{padding:15px}
+  .introSteps{gap:16px;font-size:10px}
+  .brand{font-size:16px}
+  .tag{font-size:8px}
+  .headerRight{gap:9px}
+  .quiet{width:32px;height:32px}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div>
+    <div class="brand"><i></i>CLEARSPACE</div>
+    <div class="tag">A LITTLE SPACE. A LIGHTER MIND.</div>
+  </div>
+  <div class="headerRight">
+    <span>DIGITAL CLEANING EXPERIENCE</span>
+    <button class="quiet" id="sound"
+      title="音を切り替える"
+      aria-label="サウンドを有効にする"
+      aria-pressed="false">♪</button>
+    <button class="quiet" id="pause"
+      title="一時停止 / Esc"
+      aria-label="一時停止">Ⅱ</button>
+  </div>
+</header>
+
+<div class="layout">
+  <main id="scene">
+    <canvas id="game" tabindex="0"
+      aria-label="仮想ファイルのお掃除ゲーム。押しながらポインターを動かして吸引。1で吸引、2でアーカイブ。">
+    </canvas>
+
+    <div class="scene-label">
+      <div class="eyebrow">YOUR DIGITAL SANCTUARY</div>
+      <h1 id="roomName">Downloads</h1>
+      <p id="roomDesc">いつか使う、の積み重ね。</p>
+    </div>
+    <div class="stage-number" id="stage">SESSION 01 / 03</div>
+
+    <div class="combo" id="combo">
+      <strong>× 1</strong>
+      <small>IN THE FLOW</small>
+    </div>
+
+    <div class="bottom">
+      <div class="tools">
+        <button class="tool active"
+          data-mode="vacuum" aria-pressed="true">
+          ◌ 吸い込む<kbd>1</kbd>
+        </button>
+        <button class="tool"
+          data-mode="archive" aria-pressed="false">
+          ▣ アーカイブ<kbd>2</kbd>
+        </button>
+      </div>
+      <div class="hint">
+        押しながら動かす → お掃除<br>
+        大切なファイルは、ピンクのモードで。
+      </div>
+    </div>
+
+    <div class="pauseBadge hidden" id="pauseBadge">
+      ひと休み。<br>
+      <small>Esc または Ⅱ で再開</small>
+    </div>
+
+    <div class="overlay" id="overlay">
+      <div class="modal" id="modal"></div>
+    </div>
+  </main>
+
+  <aside class="side">
+    <section>
+      <div class="tiny">SESSION SCORE</div>
+      <div class="score">
+        <b id="score" style="font-weight:500">0</b><span>pt</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="progressHead">
+        <span>空間のクリア率</span>
+        <strong id="percent">0%</strong>
+      </div>
+      <div class="track"><div id="bar"></div></div>
+    </section>
+
+    <section class="objectives">
+      <div class="tiny">A PLACE FOR EVERYTHING</div>
+      <div class="objective">
+        <span><i class="dot"></i>不要ファイル</span>
+        <b id="junkCount">0 / 0</b>
+      </div>
+      <div class="objective">
+        <span><i class="dot pink"></i>大切なファイル</span>
+        <b id="keepCount">0 / 0</b>
+      </div>
+      <div class="objective">
+        <span>解放した容量</span>
+        <b id="freed">0 MB</b>
+      </div>
+    </section>
+
+    <div class="info">
+      <h3 id="toolTitle">◌ 吸い込む</h3>
+      <p id="toolDesc">
+        緑のファイルと細かなチリを吸引。
+        続けて片づけるとコンボがつながります。
+      </p>
+    </div>
+    <div class="readout" id="readout">
+      散らかった空間に、余白を。
+    </div>
+
+    <div class="sideFoot">
+      FICTIONAL FILES. REAL SATISFACTION.<br>
+      登場するファイルはすべて架空です。<br>
+      PC内のファイルにはアクセスしません。
+    </div>
+  </aside>
+</div>
+
+<script>
+'use strict';
+
+const $ = id => document.getElementById(id);
+const canvas = $('game');
+const ctx = canvas.getContext('2d');
+
+const rooms = [
+  {
+    name: 'Downloads',
+    desc: 'いつか使う、の積み重ね。',
+    junk: 26,
+    keep: 5,
+    dust: 55
+  },
+  {
+    name: 'Creative desk',
+    desc: 'アイデアが呼吸できる場所へ。',
+    junk: 36,
+    keep: 7,
+    dust: 75
+  },
+  {
+    name: 'Deep storage',
+    desc: '最後のひとつまで、軽やかに。',
+    junk: 48,
+    keep: 9,
+    dust: 100
+  }
+];
+
+const junkNames = [
+  'untitled_04.tmp',
+  'old_backup.zip',
+  'copy (3).png',
+  'installer.dmg',
+  'cache_082.dat',
+  'draft_final_2.psd',
+  'screenshot.png',
+  'export_old.mov',
+  'temp_render.bin',
+  'unused_font.zip'
+];
+
+const keepNames = [
+  '旅の思い出.jpg',
+  '大切な手紙.txt',
+  'portfolio.fig',
+  'お気に入り.wav',
+  'idea_notes.md',
+  '家族の写真.png',
+  'my_project.blend',
+  'journal.txt',
+  '作品集.pdf'
+];
+
+let W = 0;
+let H = 0;
+let dpr = 1;
+let items = [];
+let particles = [];
+let texts = [];
+let stars = [];
+
+let level = 0;
+let score = 0;
+let freed = 0;
+let cleaned = 0;
+let saved = 0;
+let totalJunk = 0;
+let totalKeep = 0;
+
+let mode = 'vacuum';
+let state = 'intro';
+let paused = false;
+let combo = 0;
+let lastCollect = -10;
+let time = 0;
+let last = 0;
+let shake = 0;
+let warningAt = -10;
+let doneAt = 0;
+let sound = false;
+let audio = null;
+let elapsed = 0;
+let best = 0;
+let lastTone = 0;
+
+const pointer = {
+  x: -500,
+  y: -500,
+  down: false,
+  inside: false
+};
+
+try {
+  best = Number(localStorage.getItem('clearspace-best')) || 0;
+} catch {}
+
+const rand = (a,b) => a + Math.random() * (b-a);
+const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+
+function resize() {
+  const r = canvas.getBoundingClientRect();
+  const oldW = W;
+  const oldH = H;
+
+  W = r.width;
+  H = r.height;
+  dpr = Math.min(window.devicePixelRatio || 1,2);
+
+  canvas.width = W*dpr;
+  canvas.height = H*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+
+  if (oldW && oldH) {
+    for (const f of items) {
+      f.x = clamp(f.x/oldW*W,22,W-22);
+      f.y = clamp(f.y/oldH*H,140,H-100);
+    }
+  }
+
+  stars = Array.from({length:60}, () => ({
+    x: Math.random(),
+    y: Math.random(),
+    r: rand(.4,1.3),
+    p: rand(0,6)
+  }));
+}
+
+window.addEventListener('resize',resize);
+resize();
+
+function tone(
+  freq=440,
+  duration=.12,
+  type='sine',
+  volume=.07,
+  slide=0
+) {
+  if (!sound || !audio) return;
+
+  const t = audio.currentTime;
+  const o = audio.createOscillator();
+  const g = audio.createGain();
+
+  o.type = type;
+  o.frequency.setValueAtTime(freq,t);
+
+  if (slide) {
+    o.frequency.exponentialRampToValueAtTime(slide,t+duration);
+  }
+
+  g.gain.setValueAtTime(.001,t);
+  g.gain.exponentialRampToValueAtTime(volume,t+.008);
+  g.gain.exponentialRampToValueAtTime(.001,t+duration);
+
+  o.connect(g);
+  g.connect(audio.destination);
+  o.start(t);
+  o.stop(t+duration+.01);
+}
+
+function activateAudio() {
+  try {
+    audio ??= new (
+      window.AudioContext || window.webkitAudioContext
+    )();
+
+    if (audio.state === 'suspended') {
+      audio.resume().catch(() => {});
+    }
+  } catch {
+    sound = false;
+  }
+}
+
+function setMode(m) {
+  mode = m;
+
+  document.querySelectorAll('.tool').forEach(b => {
+    b.classList.toggle('active',b.dataset.mode === m);
+    b.setAttribute('aria-pressed',b.dataset.mode === m);
+  });
+
+  $('toolTitle').textContent = m === 'vacuum'
+    ? '◌ 吸い込む'
+    : '▣ アーカイブ';
+
+  $('toolDesc').textContent = m === 'vacuum'
+    ? '緑のファイルと細かなチリを吸引。続けて片づけるとコンボがつながります。'
+    : 'ピンクの大切なファイルを保管。押しながら近づくと、アーカイブへ自動で運びます。';
+
+  tone(m === 'vacuum' ? 220 : 330,.13);
+}
+
+document.querySelectorAll('.tool').forEach(b => {
+  b.addEventListener('click',() => setMode(b.dataset.mode));
+});
+
+$('sound').onclick = () => {
+  sound = !sound;
+  if (sound) activateAudio();
+
+  $('sound').textContent = sound ? '♫' : '♪';
+  $('sound').setAttribute('aria-pressed',sound);
+  $('sound').setAttribute(
+    'aria-label',
+    sound ? 'サウンドを無効にする' : 'サウンドを有効にする'
+  );
+
+  tone(660,.2);
+};
+
+function togglePause() {
+  if (state !== 'playing') return;
+
+  paused = !paused;
+  pointer.down = false;
+
+  $('pauseBadge').classList.toggle('hidden',!paused);
+  $('pause').textContent = paused ? '▶' : 'Ⅱ';
+  $('pause').setAttribute(
+    'aria-label',
+    paused ? '再開' : '一時停止'
+  );
+}
+
+$('pause').onclick = togglePause;
+
+window.addEventListener('keydown',e => {
+  if (e.repeat) return;
+
+  if (e.key === '1') setMode('vacuum');
+  if (e.key === '2') setMode('archive');
+  if (e.key === 'Escape') togglePause();
+
+  if (e.code === 'Space' && e.target === canvas) {
+    e.preventDefault();
+    setMode(mode === 'vacuum' ? 'archive' : 'vacuum');
+  }
+});
+
+window.addEventListener('blur',() => {
+  pointer.down = false;
+  if (state === 'playing' && !paused) togglePause();
+});
+
+document.addEventListener('visibilitychange',() => {
+  if (document.hidden) {
+    pointer.down = false;
+    if (state === 'playing' && !paused) togglePause();
+  }
+});
+
+function point(e) {
+  const r = canvas.getBoundingClientRect();
+  pointer.x = e.clientX-r.left;
+  pointer.y = e.clientY-r.top;
+  pointer.inside = true;
+}
+
+canvas.addEventListener('pointermove',point);
+
+canvas.addEventListener('pointerdown',e => {
+  if (state !== 'playing' || paused) return;
+
+  point(e);
+  pointer.down = true;
+  canvas.setPointerCapture(e.pointerId);
+  canvas.focus({preventScroll:true});
+  activateAudio();
+});
+
+canvas.addEventListener('pointerup',() => {
+  pointer.down = false;
+});
+
+canvas.addEventListener('pointercancel',() => {
+  pointer.down = false;
+});
+
+canvas.addEventListener('lostpointercapture',() => {
+  pointer.down = false;
+});
+
+canvas.addEventListener('pointerleave',() => {
+  if (!pointer.down) pointer.inside = false;
+});
+
+function begin(next=false) {
+  if (!next) {
+    level = 0;
+    score = 0;
+    freed = 0;
+    elapsed = 0;
+  }
+
+  items = [];
+  particles = [];
+  texts = [];
+  cleaned = 0;
+  saved = 0;
+  combo = 0;
+  lastCollect = -10;
+  paused = false;
+  pointer.down = false;
+  state = 'playing';
+
+  $('pauseBadge').classList.add('hidden');
+  $('pause').textContent = 'Ⅱ';
+  $('overlay').classList.add('hidden');
+
+  const r = rooms[level];
+  totalJunk = r.junk+r.dust;
+  totalKeep = r.keep;
+
+  $('roomName').textContent = r.name;
+  $('roomDesc').textContent = r.desc;
+  $('stage').textContent = `SESSION 0${level+1} / 03`;
+
+  const top = Math.min(170,H*.28);
+  const bottom = Math.max(top+30,H-110);
+
+  for (let i=0;i<r.junk+r.keep+r.dust;i++) {
+    const keep = i >= r.junk && i < r.junk+r.keep;
+    const dust = i >= r.junk+r.keep;
+
+    items.push({
+      x: rand(35,Math.max(36,W-35)),
+      y: rand(top,bottom),
+      vx: 0,
+      vy: 0,
+      angle: rand(-.65,.65),
+      spin: rand(-1,1),
+      size: dust ? rand(2,5) : rand(23,32),
+      keep,
+      dust,
+      name: keep
+        ? keepNames[(i-r.junk)%keepNames.length]
+        : junkNames[i%junkNames.length],
+      mb: dust ? rand(.1,2) : rand(30,690),
+      pull: 0,
+      archive: 0,
+      dead: false
+    });
+  }
+
+  setMode('vacuum');
+  updateUI();
+
+  $('readout').textContent =
+    '押しながら動かして、お掃除を始めよう。';
+}
+
+function updateUI() {
+  $('score').textContent = score.toLocaleString();
+
+  const p = Math.round(
+    (cleaned+saved)/(totalJunk+totalKeep)*100
+  );
+
+  $('percent').textContent = p+'%';
+  $('bar').style.width = p+'%';
+
+  $('junkCount').textContent = `${cleaned} / ${totalJunk}`;
+  $('keepCount').textContent = `${saved} / ${totalKeep}`;
+
+  $('freed').textContent = freed > 1024
+    ? (freed/1024).toFixed(2)+' GB'
+    : Math.round(freed)+' MB';
+
+  $('combo').classList.toggle('show',combo >= 3);
+  $('combo').firstElementChild.textContent =
+    '× '+Math.min(8,1+Math.floor(combo/4));
+}
+
+function burst(x,y,color,n=12) {
+  for (let i=0;i<n;i++) {
+    const a = rand(0,Math.PI*2);
+    const v = rand(25,160);
+
+    particles.push({
+      x,y,
+      vx: Math.cos(a)*v,
+      vy: Math.sin(a)*v,
+      life: rand(.35,.8),
+      max: .8,
+      color,
+      size: rand(1,3)
+    });
+  }
+}
+
+function collect(f) {
+  f.dead = true;
+
+  const mult = Math.min(8,1+Math.floor(combo/4));
+  combo = time-lastCollect < 1.8 ? combo+1 : 1;
+  lastCollect = time;
+
+  score += (f.dust ? 8 : f.keep ? 180 : 65)*mult;
+
+  if (f.keep) {
+    saved++;
+    $('readout').textContent =
+      f.name+' を大切に保管しました。';
+  } else {
+    cleaned++;
+    freed += f.mb;
+
+    if (!f.dust) {
+      $('readout').textContent =
+        f.name+'  ·  '+Math.round(f.mb)+' MB 解放';
+    }
+  }
+
+  burst(
+    f.x,f.y,
+    f.keep ? '#edb4cc' : '#c6f79b',
+    f.dust ? 4 : 15
+  );
+
+  if (!f.dust) {
+    texts.push({
+      x: f.x,
+      y: f.y,
+      text: f.keep ? 'ARCHIVED' : '+'+65*mult,
+      life: 1,
+      color: f.keep ? '#edb4cc' : '#c6f79b'
+    });
+
+    shake = Math.min(3,shake+.8);
+  }
+
+  if (time-lastTone > .055) {
+    const notes = [
+      261.63,329.63,392,523.25,
+      659.25,783.99,1046.5,1318.5
+    ];
+
+    tone(
+      notes[Math.min(notes.length-1,Math.floor(combo/3))]
+        *(f.keep ? 1.5 : 1),
+      f.dust ? .07 : .18,
+      'sine',
+      f.dust ? .025 : .065
+    );
+
+    lastTone = time;
+  }
+
+  updateUI();
+
+  if (cleaned === totalJunk && saved === totalKeep) {
+    state = 'finishing';
+    doneAt = time;
+    pointer.down = false;
+
+    for (let i=0;i<8;i++) {
+      setTimeout(() => {
+        tone(
+          261.63*[1,1.25,1.5,2,2.5,3,4,4][i],
+          .6,'sine',.045
+        );
+      },i*95);
+    }
+  }
+}
+
+function roundRect(x,y,w,h,r) {
+  ctx.beginPath();
+  ctx.roundRect(x,y,w,h,r);
+}
+
+function drawFile(f) {
+  ctx.save();
+  ctx.translate(f.x,f.y);
+  ctx.rotate(f.angle);
+  ctx.scale(1-f.pull*.7,1-f.pull*.7);
+
+  const col = f.keep ? '#edb4cc' : '#b9ddb2';
+
+  if (f.dust) {
+    ctx.fillStyle = '#83a694';
+    ctx.globalAlpha = .35;
+    ctx.fillRect(-f.size/2,-f.size/2,f.size,f.size);
+    ctx.restore();
+    return;
+  }
+
+  ctx.shadowColor = '#0009';
+  ctx.shadowBlur = 14;
+  ctx.shadowOffsetY = 7;
+
+  roundRect(
+    -f.size*.64,-f.size*.8,
+    f.size*1.28,f.size*1.6,4
+  );
+
+  ctx.fillStyle = f.keep ? '#3b303d' : '#263e36';
+  ctx.fill();
+
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+  ctx.strokeStyle = f.keep ? '#d99cb560' : '#a1d3944a';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.fillStyle = col;
+  ctx.globalAlpha = .85;
+
+  roundRect(
+    -f.size*.36,-f.size*.43,
+    f.size*.58,f.size*.5,2
+  );
+  ctx.fill();
+
+  ctx.globalAlpha = .3;
+  ctx.fillRect(-f.size*.36,f.size*.25,f.size*.7,2);
+  ctx.fillRect(-f.size*.36,f.size*.43,f.size*.43,2);
+
+  if (f.keep) {
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#edb4cc';
+    ctx.font = '12px sans-serif';
+    ctx.fillText('✦',f.size*.15,-f.size*.28);
+  }
+
+  ctx.restore();
+}
+
+function frame(ts) {
+  const dt = Math.min((ts-last)/1000 || .016,.035);
+  last = ts;
+
+  if (!paused) {
+    time += dt;
+    if (state === 'playing') elapsed += dt;
+    update(dt);
+  }
+
+  draw();
+  requestAnimationFrame(frame);
+}
+
+function update(dt) {
+  const active = pointer.down
+    && pointer.inside
+    && state === 'playing';
+
+  const radius = mode === 'vacuum' ? 95 : 78;
+
+  for (const f of items) {
+    if (f.dead) continue;
+
+    if (f.archive > 0) {
+      f.archive += dt*1.6;
+
+      const target = {x:W-48,y:H-105};
+
+      f.x += (target.x-f.x)*dt*7;
+      f.y += (target.y-f.y)*dt*7;
+      f.angle += dt*3;
+      f.pull = clamp(f.archive*.6,0,.9);
+
+      if (f.archive >= 1) collect(f);
+      continue;
+    }
+
+    const dx = pointer.x-f.x;
+    const dy = pointer.y-f.y;
+    const dist = Math.hypot(dx,dy);
+    const matches = (mode === 'archive') === f.keep;
+
+    if (active && dist < radius) {
+      if (matches) {
+        if (f.keep) {
+          f.archive = .01;
+          burst(f.x,f.y,'#edb4cc',5);
+        } else {
+          const force = (1-dist/radius)*1250+170;
+
+          f.vx += dx/Math.max(1,dist)*force*dt;
+          f.vy += dy/Math.max(1,dist)*force*dt;
+          f.angle += dt*(4+f.spin);
+          f.pull = clamp(1-dist/42,0,.9);
+
+          if (dist < (f.dust ? 18 : 21)) collect(f);
+        }
+      } else if (
+        f.keep && dist < 48 && time-warningAt > 2
+      ) {
+        warningAt = time;
+        combo = 0;
+        updateUI();
+
+        $('readout').textContent =
+          '✦ 大切なファイル。2 または「アーカイブ」で保管。';
+
+        texts.push({
+          x:f.x,
+          y:f.y-25,
+          text:'KEEP ME ♡',
+          color:'#edb4cc',
+          life:1.2
+        });
+
+        tone(180,.18,'sine',.04,140);
+      }
+    }
+
+    if (!active || dist > radius) {
+      f.pull = Math.max(0,f.pull-dt*4);
+    }
+
+    f.x += f.vx*dt;
+    f.y += f.vy*dt;
+    f.vx *= Math.exp(-dt*4);
+    f.vy *= Math.exp(-dt*4);
+    f.x = clamp(f.x,15,W-15);
+    f.y = clamp(f.y,125,H-85);
+  }
+
+  items = items.filter(f => !f.dead);
+
+  for (const p of particles) {
+    p.life -= dt;
+    p.x += p.vx*dt;
+    p.y += p.vy*dt;
+    p.vx *= .95;
+    p.vy *= .95;
+  }
+
+  particles = particles.filter(p => p.life > 0);
+
+  for (const t of texts) {
+    t.life -= dt;
+    t.y -= dt*28;
+  }
+
+  texts = texts.filter(t => t.life > 0);
+  shake *= Math.exp(-dt*15);
+
+  if (combo && time-lastCollect > 1.8) {
+    combo = 0;
+    updateUI();
+  }
+
+  if (state === 'finishing' && time-doneAt > 1.7) {
+    finish();
+  }
+}
+
+function draw() {
+  ctx.clearRect(0,0,W,H);
+  ctx.save();
+
+  if (shake > .05) {
+    ctx.translate(rand(-shake,shake),rand(-shake,shake));
+  }
+
+  const progress = (cleaned+saved)
+    /Math.max(1,totalJunk+totalKeep);
+
+  ctx.strokeStyle =
+    `rgba(155,205,174,${.035+progress*.035})`;
+  ctx.lineWidth = 1;
+
+  const grid = 44;
+
+  for (let x=(W%grid)/2;x<W;x+=grid) {
+    ctx.beginPath();
+    ctx.moveTo(x,120);
+    ctx.lineTo(x,H-70);
+    ctx.stroke();
+  }
+
+  for (let y=140;y<H-70;y+=grid) {
+    ctx.beginPath();
+    ctx.moveTo(18,y);
+    ctx.lineTo(W-18,y);
+    ctx.stroke();
+  }
+
+  for (const s of stars) {
+    ctx.fillStyle =
+      `rgba(188,227,185,${.07+Math.sin(time*.6+s.p)*.04})`;
+
+    ctx.beginPath();
+    ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  ctx.save();
+  ctx.translate(W/2,H*.52);
+  ctx.strokeStyle =
+    `rgba(193,230,177,${.035+progress*.12})`;
+  ctx.lineWidth = 1;
+
+  for (let i=0;i<3;i++) {
+    ctx.beginPath();
+    ctx.ellipse(
+      0,0,
+      Math.min(W*.3,200)+i*14,
+      Math.min(H*.22,125)+i*9,
+      -.2,0,Math.PI*2
+    );
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = `rgba(198,247,155,${progress*.25})`;
+  ctx.font = '10px "Space Grotesk",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '4px';
+  ctx.fillText('MAKE ROOM TO BREATHE',0,6);
+  ctx.restore();
+
+  // アーカイブの保管庫
+  ctx.save();
+  ctx.translate(W-48,H-105);
+  ctx.strokeStyle = '#edb4cc55';
+  ctx.fillStyle = '#302b3433';
+  roundRect(-25,-23,50,46,10);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.strokeStyle = '#edb4cc99';
+  ctx.strokeRect(-10,-6,20,14);
+  ctx.strokeRect(-12,-10,24,5);
+
+  ctx.fillStyle = '#edb4cc88';
+  ctx.font = '8px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('ARCHIVE',0,37);
+  ctx.restore();
+
+  for (const f of items) drawFile(f);
+
+  for (const p of particles) {
+    ctx.globalAlpha = clamp(p.life/p.max,0,1);
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  for (const t of texts) {
+    ctx.globalAlpha = Math.min(1,t.life*2);
+    ctx.fillStyle = t.color;
+    ctx.font = '500 12px "Space Grotesk",sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(t.text,t.x,t.y);
+  }
+  ctx.globalAlpha = 1;
+
+  if (pointer.inside && state === 'playing') {
+    const color = mode === 'vacuum'
+      ? '198,247,155'
+      : '237,180,204';
+
+    const r = mode === 'vacuum' ? 95 : 78;
+
+    const g = ctx.createRadialGradient(
+      pointer.x,pointer.y,0,
+      pointer.x,pointer.y,r
+    );
+
+    g.addColorStop(
+      0,
+      `rgba(${color},${pointer.down ? .12 : .035})`
+    );
+    g.addColorStop(1,`rgba(${color},0)`);
+
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(pointer.x,pointer.y,r,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.strokeStyle =
+      `rgba(${color},${pointer.down ? .6 : .25})`;
+
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3,7]);
+    ctx.beginPath();
+
+    ctx.arc(
+      pointer.x,pointer.y,
+      pointer.down ? r-7 : 26,
+      time,time+Math.PI*2
+    );
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.strokeStyle = `rgba(${color},.9)`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(pointer.x,pointer.y,8,0,Math.PI*2);
+    ctx.stroke();
+
+    if (pointer.down) {
+      for (let i=0;i<6;i++) {
+        const a = time*3+i*Math.PI/3;
+        const t = (time*1.3+i/6)%1;
+        const rr = r*(1-t);
+
+        ctx.fillStyle = `rgba(${color},${t*.7})`;
+        ctx.beginPath();
+
+        ctx.arc(
+          pointer.x+Math.cos(a+t*2)*rr,
+          pointer.y+Math.sin(a+t*2)*rr,
+          1.8,0,Math.PI*2
+        );
+        ctx.fill();
+      }
+    }
+  }
+
+  // カーソルを重ねるとファイル名を表示
+  if (!pointer.down && pointer.inside && state === 'playing') {
+    const near = items.filter(f =>
+      !f.dust
+      && Math.hypot(
+        f.x-pointer.x,
+        f.y-pointer.y
+      ) < 28
+    ).at(-1);
+
+    if (near) {
+      ctx.font = '11px sans-serif';
+
+      const label = near.name + (
+        near.keep
+          ? ' · 保管'
+          : ' · '+Math.round(near.mb)+' MB'
+      );
+
+      const tw = ctx.measureText(label).width;
+
+      const x = clamp(
+        pointer.x-tw/2-10,
+        8,
+        Math.max(8,W-tw-28)
+      );
+
+      const y = clamp(pointer.y-58,125,H-110);
+
+      ctx.fillStyle = '#0d1719ee';
+      roundRect(x,y,tw+20,29,6);
+      ctx.fill();
+
+      ctx.fillStyle = near.keep ? '#edb4cc' : '#c6f79b';
+      ctx.textAlign = 'left';
+      ctx.fillText(label,x+10,y+19);
+    }
+  }
+
+  ctx.restore();
+}
+
+function intro() {
+  $('modal').innerHTML = `
+    <div class="mark">◌</div>
+    <div class="eyebrow">THE ART OF LETTING GO</div>
+    <h2>余白をつくる。<br>気持ちが、軽くなる。</h2>
+    <p>
+      使わないデータを吸い込んで、大切なものには居場所を。<br>
+      ここは、あなただけの小さなデジタル空間。
+    </p>
+    <div class="introSteps">
+      <div><b>01</b>緑のファイルを吸引</div>
+      <div><b>02</b>ピンクは保管</div>
+      <div><b>03</b>すっきり、深呼吸</div>
+    </div>
+    <button class="primary" id="start">
+      空間を整える ↗
+    </button>
+    <span class="fine">
+      マウス・タッチで操作 / 制限時間なし<br>
+      サウンドは右上の ♪ でオンにできます。
+    </span>
+  `;
+
+  $('start').onclick = () => begin();
+}
+
+function finish() {
+  state = 'complete';
+
+  const final = level === rooms.length-1;
+
+  if (final) {
+    best = Math.max(best,score);
+
+    try {
+      localStorage.setItem('clearspace-best',String(best));
+    } catch {}
+  }
+
+  $('overlay').classList.remove('hidden');
+
+  $('modal').innerHTML = `
+    <div class="mark">✧</div>
+    <div class="eyebrow">
+      ${final ? 'A LIGHTER MIND' : 'SPACE, RESTORED'}
+    </div>
+    <h2>
+      ${final
+        ? '心地よい余白が、できました。'
+        : 'すっきり。いい気分。'}
+    </h2>
+    <p>
+      ${final
+        ? 'すべての空間が整いました。<br>大切なものだけが、ここに残っています。'
+        : 'ファイルにも、あなたにも、ひと息つける場所を。<br>次の空間も、少しだけ整えてみましょう。'}
+    </p>
+    <div class="endstats">
+      <div>
+        <b>${score.toLocaleString()}</b>
+        <span>SESSION SCORE</span>
+      </div>
+      <div>
+        <b>${(freed/1024).toFixed(1)} GB</b>
+        <span>SPACE FREED</span>
+      </div>
+    </div>
+    <button class="primary" id="next">
+      ${final ? 'もう一度、整える ↻' : '次の空間へ ↗'}
+    </button>
+    <span class="fine">
+      ${final
+        ? 'BEST '+best.toLocaleString()
+          +' pt · '+Math.floor(elapsed/60)
+          +'分'+Math.floor(elapsed%60)+'秒'
+        : 'SESSION 0'+(level+1)
+          +' COMPLETE · 大切なファイルはすべて保管済み'}
+    </span>
+  `;
+
+  $('next').onclick = () => {
+    if (final) {
+      begin();
+    } else {
+      level++;
+      begin(true);
+    }
+  };
+}
+
+intro();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
